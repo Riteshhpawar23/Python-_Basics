@@ -1,0 +1,29 @@
+# # age= 22
+# # print(13)
+# # rs=22.10
+# # print("Prachi Nimbalkar")
+# # a="prachi"
+# # print(age)
+# # print(id(age))
+# # print(id(rs))
+# # b="prachi"
+# # print(id(a))
+# # print(id(b))
+
+# # b=True
+# # print(type(b))
+# # print(type(age))
+# # print(type(rs))
+# # print(type(b))
+# # name=int(input())
+# # print(name)
+# # print(type(name))
+# print(3,2,6,10,"prachi",19,18, sep="\n")
+marks = [30,25, 40,45,60,75,90,100]
+highest = marks[0]
+for i in marks:
+    if i > highest:
+        highest = i
+        print(highest)
+    #print(highest)
+# print(highest)           

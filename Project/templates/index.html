@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web AirDraw AI</title>
+    <style>
+        body { font-family: sans-serif; background: #2c2c2c; color: white; text-align: center; }
+        canvas { border: 3px solid #444; margin-top: 20px; background: black; }
+        #ai-result { margin-top: 20px; font-size: 1.2em; min-height: 50px; padding: 10px; background: #444; border-radius: 8px;}
+    </style>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Web-Based AirDraw AI</h1>
+    <p>Use your index finger to draw in the air!</p>
+    <canvas id="canvas" width="1280" height="720"></canvas>
+    <div id="ai-result">AI results will appear here...</div>
+
+    <video id="video" width="1280" height="720" autoplay style="display:none;"></video>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const socket = io();
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const aiResultDiv = document.getElementById('ai-result');
+
+            // 1. Establish webcam access
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(err => {
+                    console.error("Error accessing webcam: ", err);
+                });
+
+            // 2. Send frames to the server continuously
+            const FPS = 20;
+            setInterval(() => {
+                // Draw video to a temporary canvas to get the data URL
+                let tempCanvas = document.createElement('canvas');
+                tempCanvas.width = video.videoWidth;
+                tempCanvas.height = video.videoHeight;
+                let tempContext = tempCanvas.getContext('2d');
+                tempContext.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+                let dataURL = tempCanvas.toDataURL('image/jpeg', 0.8);
+                socket.emit('image', dataURL);
+            }, 1000 / FPS);
+
+            // 3. Listen for processed frames from the server
+            socket.on('response_frame', (data) => {
+                const image = new Image();
+                image.src = data;
+                image.onload = () => {
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                };
+            });
+            
+            // 4. Listen for AI results from the server
+            socket.on('ai_result', (response) => {
+                console.log("AI Result received:", response);
+                if(response.type === 'text') {
+                    aiResultDiv.innerText = response.data;
+                }
+                // Add logic here for image responses
+            });
+        });
+    </script>
+</body>
+</html>

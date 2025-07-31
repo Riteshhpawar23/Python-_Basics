@@ -1,0 +1,21 @@
+def selectionsort(arr, n):
+    for i in range(n-1):
+        minn = i  # Assume the current index is the smallest
+        for j in range(i+1, n):  # Iterate over the unsorted part
+            if arr[j] < arr[minn]:  # Find the minimum element
+                minn = j
+                
+        arr[i], arr[minn] = arr[minn], arr[i]  # Swap elements if needed
+    return arr
+
+# Input handling
+n = int(input("Enter the number of elements: "))
+arr = []
+
+print("Enter the numbers:")
+for i in range(n):
+    num = int(input())
+    arr.append(num)
+
+s = selectionsort(arr, n)
+print("Sorted array:", s)

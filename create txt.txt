@@ -1,0 +1,1 @@
+%%writefile myfile.txt         <--------------------------this is the syntax to create the txt file using python
